@@ -3,6 +3,7 @@ import 'package:apiwithflutter/screen/login.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import '../model/akunmodel.dart';
+import '../model/linkapi.dart';
 
 class Register extends StatelessWidget {
   const Register({super.key});
@@ -16,8 +17,8 @@ class Register extends StatelessWidget {
     
 
     Future<void> adddatauser(
-        String number, String username, String email, String password) async {
-      final endpoint = Uri.parse("http://192.168.32.242:3300/akun/register");
+      String number, String username, String email, String password) async {
+      final endpoint = Uri.parse("${Apilink.BASE_URL}/akun/register");
       final response = await http.post(endpoint, body: {
         'id': number,
         "username": username,

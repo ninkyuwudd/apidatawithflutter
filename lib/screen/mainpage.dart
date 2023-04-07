@@ -1,5 +1,7 @@
+import 'package:apiwithflutter/model/linkapi.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:intl/intl.dart';
 import 'dart:convert';
 import '../model/data.dart';
 import '../model/datamodel.dart';
@@ -23,13 +25,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final idnya = TextEditingController();
-    final fsname = TextEditingController();
-    final lsname = TextEditingController();
-    final phonenum = TextEditingController();
+    final nama = TextEditingController();
+    final asal = TextEditingController();
+    final tujuan = TextEditingController();
+    final kelas = TextEditingController();
+    final berangkat = TextEditingController();
+    final pulang = TextEditingController();
+    final harga = TextEditingController();
 
     Future<List<dynamic>> _getdatauser() async {
-      var endpoint = Uri.parse("http://192.168.32.242:3300/users");
+      var endpoint = Uri.parse("${Apilink.BASE_URL}/pesawat");
       var response = await http.get(endpoint);
       print(response.body);
       // var body = jsonDecode(response.body);
@@ -38,7 +43,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Future<List<dynamic>> _deletedatauser(String? number) async {
       print(number);
-      var endpoint = Uri.parse("http://192.168.32.242:3300/users/'$number'");
+      var endpoint = Uri.parse("${Apilink.BASE_URL}/pesawat/delete/'$number'");
       var response = await http.delete(endpoint);
       // var body = jsonDecode(response.body);
       return json.decode(response.body);
@@ -46,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     Future<Datamodel> _editdatauser(
         String number, String firstname, String lastname, String phone) async {
-      var endpoint = Uri.parse("http://192.168.32.242:3300/users/'$number'");
+      var endpoint = Uri.parse("${Apilink.BASE_URL}/pesawat/update/'$number'");
       var response = await http.put(endpoint, body: {
         'firstname': firstname,
         'lastname': lastname,
@@ -65,14 +70,24 @@ class _MyHomePageState extends State<MyHomePage> {
       return json.decode(response.body);
     }
 
+
     Future<Datamodel> adddatauser(
-        String number, String firstname, String lastname, String phone) async {
-      final endpoint = Uri.parse("http://192.168.32.242:3300/users");
+         String namapesawat,
+  String asal,
+  String tujuan,
+  String kelas,
+  DateTime tanggalberangkat,
+  DateTime tanggalpulang,
+  int harga) async {
+      final endpoint = Uri.parse("${Apilink.BASE_URL}/users");
       final response = await http.post(endpoint, body: {
-        'id': number,
-        "firstname": firstname,
-        "lastname": lastname,
-        "phone": phone
+        "namapesawat": namapesawat,
+        "asal": asal,
+        "tujuan": tujuan,
+        "kelas": kelas,
+        "tanggalberangkat": tanggalberangkat,
+        "tanggalpulang": tanggalpulang,
+        "harga":harga
       });
       if (response.statusCode == 201) {
         // If the server did return a 201 CREATED response,
@@ -85,156 +100,191 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
-    return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.title),
-          actions: [
-            IconButton(
-                onPressed: () {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            title: Text("Add Data"),
-                            content: Column(
-                              children: [
-                                TextField(
-                                  controller: idnya,
-                                  decoration: InputDecoration(hintText: "id"),
+    return SafeArea(
+      child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+            actions: [
+              IconButton(
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                              title: Text("Add Data"),
+                              content: SingleChildScrollView(
+                                child: Column(
+                                  children: [
+                                    TextField(
+                                      controller: nama,
+                                      decoration: InputDecoration(hintText: "nama pesawat"),
+                                    ),
+                                    TextField(
+                                      controller: asal,
+                                      decoration: InputDecoration(
+                                          hintText: "asal"),
+                                    ),
+                                    TextField(
+                                      controller: tujuan,
+                                      decoration:
+                                          InputDecoration(hintText: "tujuan"),
+                                    ),
+                                    TextField(
+                                      controller: kelas,
+                                      decoration:
+                                          InputDecoration(hintText: "kelas"),
+                                    ),
+                                                                    TextField(
+                                      controller: berangkat,
+                                      decoration:
+                                          InputDecoration(hintText: "tanggal berangkat"),
+                                    ),
+                                                                    TextField(
+                                      controller: pulang,
+                                      decoration:
+                                          InputDecoration(hintText: "tanggal pulang"),
+                                    ),
+                                                                    TextField(
+                                      controller: harga,
+                                      keyboardType: TextInputType.number,
+                                      decoration:
+                                          InputDecoration(hintText: "harga"),
+                                    ),
+                                  ],
                                 ),
-                                TextField(
-                                  controller: fsname,
-                                  decoration: InputDecoration(
-                                      hintText: "New firstname"),
-                                ),
-                                TextField(
-                                  controller: lsname,
-                                  decoration:
-                                      InputDecoration(hintText: "New lastname"),
-                                ),
-                                TextField(
-                                  controller: phonenum,
-                                  decoration:
-                                      InputDecoration(hintText: "New phone"),
-                                ),
-                              ],
-                            ),
-                            actions: [
-                              ElevatedButton(
-                                  onPressed: () {
-                                    final thisid = idnya.text;
-                                    final fsnamedata = fsname.text;
-                                    final lsnamedata = lsname.text;
-                                    final phonedata = phonenum.text;
-                                    adddatauser(thisid, fsnamedata, lsnamedata,
-                                        phonedata);
-                                    setState(() {});
-                                  },
-                                  child: Text("Submit"))
-                            ],
-                          ));
-                  setState(() {});
-                },
-                icon: Icon(Icons.add))
-          ],
-        ),
-        body: FutureBuilder(
-            future: _getdatauser(),
-            builder: (BuildContext context, AsyncSnapshot snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                return Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                  child: ListView.builder(
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        return Card(
-                          child: Column(
-                            children: [
-                              ListTile(
-                                title: Text(
-                                    '${snapshot.data[index]["firstname"]} ${snapshot.data[index]["lastname"]}'),
-                                subtitle: Text(snapshot.data[index]["phone"]),
                               ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  IconButton(
+                              actions: [
+                                ElevatedButton(
                                     onPressed: () {
-                                      // _deletedatauser(snapshot.data[index]['id']
-                                      //     .toString());
-                                      showDialog(
-                                          context: context,
-                                          builder: (context) => AlertDialog(
-                                                title: Text("Edit Data"),
-                                                content: Column(
-                                                  children: [
-                                                    TextField(
-                                                      controller: fsname,
-                                                      decoration: InputDecoration(
-                                                          hintText:
-                                                              "New firstname"),
-                                                    ),
-                                                    TextField(
-                                                      controller: lsname,
-                                                      decoration: InputDecoration(
-                                                          hintText:
-                                                              "New lastname"),
-                                                    ),
-                                                    TextField(
-                                                      controller: phonenum,
-                                                      decoration:
-                                                          InputDecoration(
-                                                              hintText:
-                                                                  "New phone"),
-                                                    ),
-                                                  ],
-                                                ),
-                                                actions: [
-                                                  ElevatedButton(
-                                                      onPressed: () {
-                                                        var fsnamedata =
-                                                            fsname.text;
-                                                        var lsnamedata =
-                                                            lsname.text;
-                                                        var phonedata =
-                                                            phonenum.text;
-                                                        _editdatauser(
-                                                            snapshot.data[index]
-                                                                ['id'],
-                                                            fsnamedata,
-                                                            lsnamedata,
-                                                            phonedata);
-                                                        setState(() {});
-                                                      },
-                                                      child: Text("Update"))
-                                                ],
-                                              ));
-                                    },
-                                    icon: Icon(Icons.edit),
-                                  ),
-                                  IconButton(
-                                    onPressed: () {
-                                      _deletedatauser(
-                                          snapshot.data[index]['id']);
+                                      final getnama = nama.text;
+                                      final getasal = asal.text;
+                                      final gettujuan = tujuan.text;
+                                      final getkelas = kelas.text;
+                                      final getberangkat = berangkat.text;
+                                      final getpulang = pulang.text;
+                                      final getharga = harga.text;
+                                      adddatauser(getnama,getasal,gettujuan,getkelas,DateTime.parse(getberangkat),DateTime.parse(getpulang),int.parse(getberangkat));
                                       setState(() {});
                                     },
-                                    icon: Icon(
-                                      Icons.delete,
-                                      color: Colors.red,
-                                    ),
+                                    child: Text("Submit"))
+                              ],
+                            ));
+                    setState(() {});
+                  },
+                  icon: Icon(Icons.add))
+            ],
+          ),
+          body: FutureBuilder(
+              future: _getdatauser(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  return Container(
+                    width: MediaQuery.of(context).size.width,
+                    // height: MediaQuery.of(context).size.height,
+                    margin: EdgeInsets.all(10),
+    
+                    child: ListView.builder(
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          return Card(
+                            child: Column(
+                              children: [
+                                ListTile(
+                                  title: Text(
+                                      '${snapshot.data[index]["namapesawat"]} ${snapshot.data[index]["asal"]}'),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text('Berangkat  : ${DateFormat.yMMMd().format(DateTime.parse(snapshot.data[index]["tanggalberangkat"]))}'),
+                                      Text('Pulang: ${DateFormat.yMMMd().format(DateTime.parse(snapshot.data[index]["tanggalpulang"]))}'),
+                                    ],
                                   ),
-                                ],
-                              )
-                            ],
-                          ),
-                        );
-                      }),
-                );
-              }
-              return Container();
-            })
-
-// This trailing comma makes auto-formatting nicer for build methods.
-        );
+                                  trailing: Column(
+                                    children: [
+                                      Text('Rp. ${snapshot.data[index]["harga"]}')
+                                    ],
+                                  ),
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    IconButton(
+                                      onPressed: () {
+                                        // _deletedatauser(snapshot.data[index]['id']
+                                        //     .toString());
+                                        showDialog(
+                                            context: context,
+                                            builder: (context) => AlertDialog(
+                                                  title: Text("Edit Data"),
+                                                  content: Column(
+                                                    children: [
+                                                      TextField(
+                                                        controller: fsname,
+                                                        decoration: InputDecoration(
+                                                            hintText:
+                                                                "New firstname"),
+                                                      ),
+                                                      TextField(
+                                                        controller: lsname,
+                                                        decoration: InputDecoration(
+                                                            hintText:
+                                                                "New lastname"),
+                                                      ),
+                                                      TextField(
+                                                        controller: phonenum,
+                                                        decoration:
+                                                            InputDecoration(
+                                                                hintText:
+                                                                    "New phone"),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  actions: [
+                                                    ElevatedButton(
+                                                        onPressed: () {
+                                                          var fsnamedata =
+                                                              fsname.text;
+                                                          var lsnamedata =
+                                                              lsname.text;
+                                                          var phonedata =
+                                                              phonenum.text;
+                                                          _editdatauser(
+                                                              snapshot.data[index]
+                                                                  ['id'],
+                                                              fsnamedata,
+                                                              lsnamedata,
+                                                              phonedata);
+                                                          setState(() {});
+                                                        },
+                                                        child: Text("Update"))
+                                                  ],
+                                                ));
+                                      },
+                                      icon: Icon(Icons.edit),
+                                    ),
+                                    IconButton(
+                                      onPressed: () {
+                                        _deletedatauser(
+                                            snapshot.data[index]['id']);
+                                        setState(() {});
+                                      },
+                                      icon: Icon(
+                                        Icons.delete,
+                                        color: Colors.red,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              ],
+                            ),
+                          );
+                        }),
+                  );
+                }
+                return Container();
+              })
+    
+    // This trailing comma makes auto-formatting nicer for build methods.
+          ),
+    );
   }
 }

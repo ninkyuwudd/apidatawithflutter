@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import '../model/linkapi.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -22,10 +24,10 @@ class _LoginPageState extends State<LoginPage> {
 
     Future<void> checkdata(String email,String password)async{
       try{
-              final endpoint = Uri.parse("http://192.168.32.242:3300/akun/login");
-      final response = await http.post(endpoint,body: {
-        "email": email,
-        "password": password
+        final endpoint = Uri.parse("${Apilink.BASE_URL}/akun/login");
+        final response = await http.post(endpoint,body: {
+          "email": email,
+          "password": password
       });
       print("from ceck");
 
