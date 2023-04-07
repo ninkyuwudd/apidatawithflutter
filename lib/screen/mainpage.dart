@@ -25,13 +25,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final nama = TextEditingController();
-    final asal = TextEditingController();
-    final tujuan = TextEditingController();
-    final kelas = TextEditingController();
-    final berangkat = TextEditingController();
-    final pulang = TextEditingController();
-    final harga = TextEditingController();
+    TextEditingController nama = TextEditingController();
+    TextEditingController asal = TextEditingController();
+    TextEditingController tujuan = TextEditingController();
+    TextEditingController kelas = TextEditingController();
+    TextEditingController berangkat = TextEditingController();
+    TextEditingController pulang = TextEditingController();
+    TextEditingController harga = TextEditingController();
 
     Future<List<dynamic>> _getdatauser() async {
       var endpoint = Uri.parse("${Apilink.BASE_URL}/pesawat");
@@ -50,13 +50,23 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     Future<Datamodel> _editdatauser(
-        String number, String firstname, String lastname, String phone) async {
+        String number,
+        String namapesawat,
+        String asal,
+        String tujuan,
+        String kelas,
+        DateTime tanggalberangkat,
+        DateTime tanggalpulang,
+        int harga) async {
       var endpoint = Uri.parse("${Apilink.BASE_URL}/pesawat/update/'$number'");
       var response = await http.put(endpoint, body: {
-        'firstname': firstname,
-        'lastname': lastname,
-        'phone': phone,
-        'id': number
+        "namapesawat": namapesawat,
+        "asal": asal,
+        "tujuan": tujuan,
+        "kelas": kelas,
+        "tanggalberangkat": tanggalberangkat,
+        "tanggalpulang": tanggalpulang,
+        "harga": harga
       });
       // var body = jsonDecode(response.body);
       print(response.body);
@@ -70,15 +80,14 @@ class _MyHomePageState extends State<MyHomePage> {
       return json.decode(response.body);
     }
 
-
     Future<Datamodel> adddatauser(
-         String namapesawat,
-  String asal,
-  String tujuan,
-  String kelas,
-  DateTime tanggalberangkat,
-  DateTime tanggalpulang,
-  int harga) async {
+        String namapesawat,
+        String asal,
+        String tujuan,
+        String kelas,
+        String tanggalberangkat,
+        String tanggalpulang,
+        int harga) async {
       final endpoint = Uri.parse("${Apilink.BASE_URL}/users");
       final response = await http.post(endpoint, body: {
         "namapesawat": namapesawat,
@@ -87,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
         "kelas": kelas,
         "tanggalberangkat": tanggalberangkat,
         "tanggalpulang": tanggalpulang,
-        "harga":harga
+        "harga": harga
       });
       if (response.statusCode == 201) {
         // If the server did return a 201 CREATED response,
@@ -116,12 +125,13 @@ class _MyHomePageState extends State<MyHomePage> {
                                   children: [
                                     TextField(
                                       controller: nama,
-                                      decoration: InputDecoration(hintText: "nama pesawat"),
+                                      decoration: InputDecoration(
+                                          hintText: "nama pesawat"),
                                     ),
                                     TextField(
                                       controller: asal,
-                                      decoration: InputDecoration(
-                                          hintText: "asal"),
+                                      decoration:
+                                          InputDecoration(hintText: "asal"),
                                     ),
                                     TextField(
                                       controller: tujuan,
@@ -133,17 +143,17 @@ class _MyHomePageState extends State<MyHomePage> {
                                       decoration:
                                           InputDecoration(hintText: "kelas"),
                                     ),
-                                                                    TextField(
+                                    TextField(
                                       controller: berangkat,
-                                      decoration:
-                                          InputDecoration(hintText: "tanggal berangkat"),
+                                      decoration: InputDecoration(
+                                          hintText: "tanggal berangkat"),
                                     ),
-                                                                    TextField(
+                                    TextField(
                                       controller: pulang,
-                                      decoration:
-                                          InputDecoration(hintText: "tanggal pulang"),
+                                      decoration: InputDecoration(
+                                          hintText: "tanggal pulang"),
                                     ),
-                                                                    TextField(
+                                    TextField(
                                       controller: harga,
                                       keyboardType: TextInputType.number,
                                       decoration:
@@ -162,7 +172,14 @@ class _MyHomePageState extends State<MyHomePage> {
                                       final getberangkat = berangkat.text;
                                       final getpulang = pulang.text;
                                       final getharga = harga.text;
-                                      adddatauser(getnama,getasal,gettujuan,getkelas,DateTime.parse(getberangkat),DateTime.parse(getpulang),int.parse(getberangkat));
+                                      adddatauser(
+                                          getnama,
+                                          getasal,
+                                          gettujuan,
+                                          getkelas,
+                                          getberangkat,
+                                          getpulang,
+                                          int.parse(getberangkat));
                                       setState(() {});
                                     },
                                     child: Text("Submit"))
@@ -181,7 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     width: MediaQuery.of(context).size.width,
                     // height: MediaQuery.of(context).size.height,
                     margin: EdgeInsets.all(10),
-    
+
                     child: ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (BuildContext context, int index) {
@@ -192,15 +209,19 @@ class _MyHomePageState extends State<MyHomePage> {
                                   title: Text(
                                       '${snapshot.data[index]["namapesawat"]} ${snapshot.data[index]["asal"]}'),
                                   subtitle: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
-                                      Text('Berangkat  : ${DateFormat.yMMMd().format(DateTime.parse(snapshot.data[index]["tanggalberangkat"]))}'),
-                                      Text('Pulang: ${DateFormat.yMMMd().format(DateTime.parse(snapshot.data[index]["tanggalpulang"]))}'),
+                                      Text(
+                                          'Berangkat  : ${DateFormat.yMMMd().format(DateTime.parse(snapshot.data[index]["tanggalberangkat"]))}'),
+                                      Text(
+                                          'Pulang: ${DateFormat.yMMMd().format(DateTime.parse(snapshot.data[index]["tanggalpulang"]))}'),
                                     ],
                                   ),
                                   trailing: Column(
                                     children: [
-                                      Text('Rp. ${snapshot.data[index]["harga"]}')
+                                      Text(
+                                          'Rp. ${snapshot.data[index]["harga"]}')
                                     ],
                                   ),
                                 ),
@@ -217,42 +238,108 @@ class _MyHomePageState extends State<MyHomePage> {
                                                   title: Text("Edit Data"),
                                                   content: Column(
                                                     children: [
-                                                      TextField(
-                                                        controller: fsname,
+                                                      TextFormField(
+                                                        initialValue:
+                                                            snapshot.data[index]
+                                                                ["namapesawat"],
+                                                        controller: nama,
                                                         decoration: InputDecoration(
                                                             hintText:
-                                                                "New firstname"),
+                                                                "nama pesawat"),
                                                       ),
-                                                      TextField(
-                                                        controller: lsname,
-                                                        decoration: InputDecoration(
-                                                            hintText:
-                                                                "New lastname"),
-                                                      ),
-                                                      TextField(
-                                                        controller: phonenum,
+                                                      TextFormField(
+                                                        initialValue:
+                                                            snapshot.data[index]
+                                                                ["asal"],
+                                                        controller: asal,
                                                         decoration:
                                                             InputDecoration(
                                                                 hintText:
-                                                                    "New phone"),
+                                                                    "asal"),
+                                                      ),
+                                                      TextFormField(
+                                                        initialValue:
+                                                            snapshot.data[index]
+                                                                ["tujuan"],
+                                                        controller: tujuan,
+                                                        decoration:
+                                                            InputDecoration(
+                                                                hintText:
+                                                                    "tujuan"),
+                                                      ),
+                                                      TextFormField(
+                                                        initialValue:
+                                                            snapshot.data[index]
+                                                                ["kelas"],
+                                                        controller: kelas,
+                                                        decoration:
+                                                            InputDecoration(
+                                                                hintText:
+                                                                    "kelas"),
+                                                      ),
+                                                      TextFormField(
+                                                        initialValue: snapshot
+                                                                .data[index][
+                                                            "tanggalberangkat"],
+                                                        controller: berangkat,
+                                                        decoration: InputDecoration(
+                                                            hintText:
+                                                                "tanggal berangkat"),
+                                                      ),
+                                                      TextFormField(
+                                                        initialValue: snapshot
+                                                                .data[index]
+                                                            ["tanggalpulang"],
+                                                        controller: pulang,
+                                                        decoration: InputDecoration(
+                                                            hintText:
+                                                                "tanggal pulang"),
+                                                      ),
+                                                      TextFormField(
+                                                        initialValue:
+                                                            snapshot.data[index]
+                                                                ["harga"],
+                                                        controller: harga,
+                                                        keyboardType:
+                                                            TextInputType
+                                                                .number,
+                                                        decoration:
+                                                            InputDecoration(
+                                                                hintText:
+                                                                    "harga"),
                                                       ),
                                                     ],
                                                   ),
                                                   actions: [
                                                     ElevatedButton(
                                                         onPressed: () {
-                                                          var fsnamedata =
-                                                              fsname.text;
-                                                          var lsnamedata =
-                                                              lsname.text;
-                                                          var phonedata =
-                                                              phonenum.text;
+                                                          final getnama =
+                                                              nama.text;
+                                                          final getasal =
+                                                              asal.text;
+                                                          final gettujuan =
+                                                              tujuan.text;
+                                                          final getkelas =
+                                                              kelas.text;
+                                                          final getberangkat =
+                                                              berangkat.text;
+                                                          final getpulang =
+                                                              pulang.text;
+                                                          final getharga =
+                                                              harga.text;
                                                           _editdatauser(
-                                                              snapshot.data[index]
-                                                                  ['id'],
-                                                              fsnamedata,
-                                                              lsnamedata,
-                                                              phonedata);
+                                                              snapshot.data[
+                                                                  index]['id'],
+                                                              getnama,
+                                                              getasal,
+                                                              gettujuan,
+                                                              getkelas,
+                                                              DateTime.parse(
+                                                                  getberangkat),
+                                                              DateTime.parse(
+                                                                  getpulang),
+                                                              int.parse(
+                                                                  getberangkat));
                                                           setState(() {});
                                                         },
                                                         child: Text("Update"))
@@ -282,8 +369,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
                 return Container();
               })
-    
-    // This trailing comma makes auto-formatting nicer for build methods.
+
+          // This trailing comma makes auto-formatting nicer for build methods.
           ),
     );
   }
