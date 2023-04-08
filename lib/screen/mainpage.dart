@@ -41,24 +41,25 @@ class _MyHomePageState extends State<MyHomePage> {
       return json.decode(response.body);
     }
 
-    Future<List<dynamic>> _deletedatauser(String? number) async {
+    Future<List<dynamic>> _deletedatauser(int number) async {
       print(number);
-      var endpoint = Uri.parse("${Apilink.BASE_URL}/pesawat/delete/'$number'");
+      var endpoint = Uri.parse("${Apilink.BASE_URL}/pesawat/delete/$number");
       var response = await http.delete(endpoint);
       // var body = jsonDecode(response.body);
       return json.decode(response.body);
     }
 
     Future<Datamodel> _editdatauser(
-        String number,
+        int number,
         String namapesawat,
         String asal,
         String tujuan,
         String kelas,
-        DateTime tanggalberangkat,
-        DateTime tanggalpulang,
-        int harga) async {
-      var endpoint = Uri.parse("${Apilink.BASE_URL}/pesawat/update/'$number'");
+        String tanggalberangkat,
+        String tanggalpulang,
+        String harga
+        ) async {
+      var endpoint = Uri.parse("${Apilink.BASE_URL}/pesawat/update/$number");
       var response = await http.put(endpoint, body: {
         "namapesawat": namapesawat,
         "asal": asal,
@@ -87,8 +88,9 @@ class _MyHomePageState extends State<MyHomePage> {
         String kelas,
         String tanggalberangkat,
         String tanggalpulang,
-        int harga) async {
-      final endpoint = Uri.parse("${Apilink.BASE_URL}/users");
+        String harga
+        ) async {
+      final endpoint = Uri.parse("${Apilink.BASE_URL}/pesawat/register");
       final response = await http.post(endpoint, body: {
         "namapesawat": namapesawat,
         "asal": asal,
@@ -105,13 +107,14 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         // If the server did not return a 201 CREATED response,
         // then throw an exception.
-        throw Exception('Failed to create album.');
+        throw Exception('Failed to create tiket');
       }
     }
 
     return SafeArea(
       child: Scaffold(
           appBar: AppBar(
+            automaticallyImplyLeading: false,
             title: Text(widget.title),
             actions: [
               IconButton(
@@ -179,7 +182,7 @@ class _MyHomePageState extends State<MyHomePage> {
                                           getkelas,
                                           getberangkat,
                                           getpulang,
-                                          int.parse(getberangkat));
+                                          getharga);
                                       setState(() {});
                                     },
                                     child: Text("Submit"))
@@ -236,79 +239,67 @@ class _MyHomePageState extends State<MyHomePage> {
                                             context: context,
                                             builder: (context) => AlertDialog(
                                                   title: Text("Edit Data"),
-                                                  content: Column(
-                                                    children: [
-                                                      TextFormField(
-                                                        initialValue:
-                                                            snapshot.data[index]
-                                                                ["namapesawat"],
-                                                        controller: nama,
-                                                        decoration: InputDecoration(
-                                                            hintText:
-                                                                "nama pesawat"),
-                                                      ),
-                                                      TextFormField(
-                                                        initialValue:
-                                                            snapshot.data[index]
-                                                                ["asal"],
-                                                        controller: asal,
-                                                        decoration:
-                                                            InputDecoration(
-                                                                hintText:
-                                                                    "asal"),
-                                                      ),
-                                                      TextFormField(
-                                                        initialValue:
-                                                            snapshot.data[index]
-                                                                ["tujuan"],
-                                                        controller: tujuan,
-                                                        decoration:
-                                                            InputDecoration(
-                                                                hintText:
-                                                                    "tujuan"),
-                                                      ),
-                                                      TextFormField(
-                                                        initialValue:
-                                                            snapshot.data[index]
-                                                                ["kelas"],
-                                                        controller: kelas,
-                                                        decoration:
-                                                            InputDecoration(
-                                                                hintText:
-                                                                    "kelas"),
-                                                      ),
-                                                      TextFormField(
-                                                        initialValue: snapshot
-                                                                .data[index][
-                                                            "tanggalberangkat"],
-                                                        controller: berangkat,
-                                                        decoration: InputDecoration(
-                                                            hintText:
-                                                                "tanggal berangkat"),
-                                                      ),
-                                                      TextFormField(
-                                                        initialValue: snapshot
-                                                                .data[index]
-                                                            ["tanggalpulang"],
-                                                        controller: pulang,
-                                                        decoration: InputDecoration(
-                                                            hintText:
-                                                                "tanggal pulang"),
-                                                      ),
-                                                      TextFormField(
-                                                        initialValue:
-                                                            snapshot.data[index]
-                                                                ["harga"],
-                                                        controller: harga,
-                                                        keyboardType:
-                                                            TextInputType
-                                                                .number,
-                                                        decoration:
-                                                            InputDecoration(
-                                                                hintText:
-                                                                    "harga"),
-                                                      ),
-                                                    ],
+                                                  content: SingleChildScrollView(
+                                                    child: Column(
+                                                      children: [
+                                                        TextFormField(
+                                                  
+                                                          controller: nama,
+                                                          decoration: InputDecoration(
+                                                              hintText:
+                                                                  "nama pesawat"),
+                                                        ),
+                                                        TextFormField(
+                                                  
+                                                          controller: asal,
+                                                          decoration:
+                                                              InputDecoration(
+                                                                  hintText:
+                                                                      "asal"),
+                                                        ),
+                                                        TextFormField(
+                                                  
+                                                          controller: tujuan,
+                                                          decoration:
+                                                              InputDecoration(
+                                                                  hintText:
+                                                                      "tujuan"),
+                                                        ),
+                                                        TextFormField(
+                                                  
+                                                          controller: kelas,
+                                                          decoration:
+                                                              InputDecoration(
+                                                                  hintText:
+                                                                      "kelas"),
+                                                        ),
+                                                        TextFormField(
+                                                          
+                                                          controller: berangkat,
+                                                          decoration: InputDecoration(
+                                                              hintText:
+                                                                  "tanggal berangkat"),
+                                                        ),
+                                                        TextFormField(
+                                                          
+                                                          controller: pulang,
+                                                          decoration: InputDecoration(
+                                                              hintText:
+                                                                  "tanggal pulang"),
+                                                        ),
+                                                        TextFormField(
+                                                  
+                                                          controller: harga,
+                                                          keyboardType:
+                                                              TextInputType
+                                                                  .number,
+                                                          decoration:
+                                                              InputDecoration(
+                                                                  hintText:
+                                                                      "harga"),
+                                                        ),
+                                                      ],
+                                                    ),
                                                   ),
                                                   actions: [
                                                     ElevatedButton(
@@ -334,12 +325,12 @@ class _MyHomePageState extends State<MyHomePage> {
                                                               getasal,
                                                               gettujuan,
                                                               getkelas,
-                                                              DateTime.parse(
-                                                                  getberangkat),
-                                                              DateTime.parse(
-                                                                  getpulang),
-                                                              int.parse(
-                                                                  getberangkat));
+                                                              
+                                                                  getberangkat,
+                                                              
+                                                                  getpulang,
+                                                              
+                                                                  getharga);
                                                           setState(() {});
                                                         },
                                                         child: Text("Update"))
